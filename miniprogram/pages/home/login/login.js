@@ -1,5 +1,6 @@
 // pages/home/home.js
 var Bmob = require('../../../dist/Bmob-1.6.0.min.js');
+var md5=require('../../../dist/md5.js');
 var app = getApp();
 
 Page({
@@ -48,7 +49,7 @@ Page({
       try {
         app.globalData.db.collection('qyzx_users').where({
             _id: value["userId"],
-            password: value["userPw"]
+            password: md5.hexMD5(value["userPw"])
           })
           .get({
             success: function(res) {
@@ -89,35 +90,55 @@ Page({
       //   })
       // })
     } else {
-      console.log('form发生了regist事件，携带数据为：', value)
-      var that = this;
-      let params = {
-        username: value["userId"],
-        password: value["userPw"],
-        email: value["userEm"],
+      if (value['userId'] == "" || value['userPw'] == "" || value['userEm'] == "")
+      {
+        wx.showToast({
+          title: '请完整填写信息',
+          icon: 'none',
+          duration: 2000
+        })
+        return
       }
 
-      //写入数据库users
-      app.globalData.db.collection('qyzx_users').add({
-        // data 字段表示需新增的 JSON 数据
-        data: {
-          _id: value["userId"],
-          password: new String(value["userPw"]),
-          email: new String(value["userEm"]),
-          due: new Date(),
-        },
-        success: function(res) {
-          // res 是一个对象，其中有 _id 字段标记刚创建的记录的 id
-          console.log('注册成功', res)
-          wx.showModal({
-            title: '提示',
-            content: '注册成功，请登录'
-          })
-        }
-      })
+      app.globalData.db.collection('qyzx_users').where({
+          // gt 方法用于指定一个 "大于" 条件，此处 _.gt(30) 是一个 "大于 30" 的条件
+          _id : value['userId']
+        })
+        .get({
+          success: function(res) {
+            console.log(res.data)
+            if (res.data[0] == null) {
 
+              //写入数据库users
+              app.globalData.db.collection('qyzx_users').add({
+                // data 字段表示需新增的 JSON 数据
+                data: {
+                  _id: value["userId"],
+                  password: new String(md5.hexMD5( value["userPw"])),
+                  email: new String(value["userEm"]),
+                  due: new Date(),
+                },
+                success: function(res) {
+                  // res 是一个对象，其中有 _id 字段标记刚创建的记录的 id
+                  console.log('注册成功', res)
+                  wx.showModal({
+                    title: '提示',
+                    content: '注册成功，请登录'
+                  })
+                }
+              })
 
+            } else {
 
+              wx.showToast({
+                title: '用户名已存在',
+                icon: 'none',
+                duration: 2000
+              })
+
+            }
+          }
+        })
 
 
       // Bmob.User.register(params).then(res => {
