@@ -19,7 +19,7 @@ Page({
       {
         name: '后勤',
         value: '后勤',
-        
+
       },
       {
         name: '课余',
@@ -46,81 +46,135 @@ Page({
   },
 
   loginBtnClick: function(e) {
-    if (this.data.suggestion == null) {
+
+    if (app.globalData.userInfo == null) {
       wx.showModal({
         title: '提示',
-        content: '请不要输入空的内容哦',
+        content: '请先登录',
         success: function(res) {
           if (res.confirm) {
             console.log('用户点击确定')
+            wx.navigateTo({
+              url: '/pages/home/login/login',
+            })
           } else if (res.cancel) {
             console.log('用户点击取消')
           }
         }
       })
-      
     } else {
-      if (app.globalData.userInfo == null) {
+      if (this.data.suggestion == null) {
         wx.showModal({
           title: '提示',
-          content: '请先登录',
-          success: function (res) {
+          content: '请不要输入空的内容哦',
+          success: function(res) {
             if (res.confirm) {
               console.log('用户点击确定')
-              wx.navigateTo({
-                url: '/pages/home/login/login',
-              })
             } else if (res.cancel) {
               console.log('用户点击取消')
             }
           }
         })
+
       } else {
         console.log("类别：" + this.data.classes + " 建议：" + this.data.suggestion);
-        const query = Bmob.Query('text');
-        query.set("classes", this.data.classes)
-        query.set("content", this.data.suggestion)
-        query.set("writer", app.globalData.userInfo.username)
-        query.set("viewed", 0)
-        query.set("ding", 0)
-        query.set("checked", false)
-        query.save().then(res => {
-          console.log(res)
-          wx.showModal({
-            title: '提示',
-            content: '提交成功',
-            success: function(res) {
-              if (res.confirm) {
-                console.log('用户点击确定')
-                wx.navigateTo({
-                  url: '/pages/index/index',
-                })
-              } else if (res.cancel) {
-                console.log('用户点击取消')
+
+        app.globalData.db.collection('qyzx_texts').add({
+          // data 字段表示需新增的 JSON 数据
+          data: {
+            classes: new String(this.data.classes),
+            due: new Date(),
+            content: new String(this.data.suggestion),
+            writer: new String(app.globalData.userInfo._id),
+            viewed: new Number(0),
+            ding: new Number(0),
+            checked: false
+          },
+          success: function(res) {
+            // 成功反馈建议
+            console.log(res)
+            wx.showModal({
+              title: '提示',
+              content: '提交成功',
+              success: function(res) {
+                if (res.confirm) {
+                  console.log('用户点击确定')
+                  wx.navigateTo({
+                    url: '/pages/index/index',
+                  })
+                } else if (res.cancel) {
+                  console.log('用户点击取消')
+                }
               }
-            }
-          })
-          this.setData({
-            suggestion: "",
-            userName: ""
-          });
-          console.log("跳转界面")
-        }).catch(err => {
-          console.log(err)
-          wx.showModal({
-            title: '提示',
-            content: '提交失败,请检查网络',
-            success: function(res) {
-              if (res.confirm) {
-                console.log('用户点击确定')
-              } else if (res.cancel) {
-                console.log('用户点击取消')
+            })
+            this.setData({
+              suggestion: "",
+              userName: ""
+            });
+            console.log("跳转界面")
+          },
+          fail: function(res) {
+            console.log(err)
+            wx.showModal({
+              title: '提示',
+              content: '提交失败,请检查网络',
+              success: function(res) {
+                if (res.confirm) {
+                  console.log('用户点击确定')
+                } else if (res.cancel) {
+                  console.log('用户点击取消')
+                }
               }
-            }
-          })
+            })
+          }
         })
+
+
+        // const query = Bmob.Query('text');
+        // query.set("classes", this.data.classes)
+        // query.set("content", this.data.suggestion)
+        // query.set("writer", app.globalData.userInfo.username)
+        // query.set("viewed", 0)
+        // query.set("ding", 0)
+        // query.set("checked", false)
+
+        // query.save().then(res => {
+        //   console.log(res)
+        //   wx.showModal({
+        //     title: '提示',
+        //     content: '提交成功',
+        //     success: function(res) {
+        //       if (res.confirm) {
+        //         console.log('用户点击确定')
+        //         wx.navigateTo({
+        //           url: '/pages/index/index',
+        //         })
+        //       } else if (res.cancel) {
+        //         console.log('用户点击取消')
+        //       }
+        //     }
+        //   })
+        //   this.setData({
+        //     suggestion: "",
+        //     userName: ""
+        //   });
+        //   console.log("跳转界面")
+        // }).catch(err => {
+        //   console.log(err)
+        //   wx.showModal({
+        //     title: '提示',
+        //     content: '提交失败,请检查网络',
+        //     success: function(res) {
+        //       if (res.confirm) {
+        //         console.log('用户点击确定')
+        //       } else if (res.cancel) {
+        //         console.log('用户点击取消')
+        //       }
+        //     }
+        //   })
+        // })
       }
-      
+
     }
   },
 
@@ -128,7 +182,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-
+    console.log(app.globalData.userInfo)
   },
 
   /**

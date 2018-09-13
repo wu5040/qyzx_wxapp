@@ -17,7 +17,7 @@
     </view>
 
     <view class='timer'>
-      发布于 {{ rows.createdAt }}
+      发布于 {{ rows_due }}
     </view>
 
 
@@ -32,9 +32,9 @@
     <view class="weui-panel__bd">
       <block wx:if="{{commentList.length>0}}">
         <view class="weui-media-box weui-media-box_text" wx:for="{{commentList}}" wx:key="commentItem">
-          <view class="weui-media-box__desc">{{ item.comment }}</view>
+          <view class="weui-media-box__desc">{{ item.content }}</view>
           <view class="weui-media-box__info">
-            <view class="weui-media-box__info__meta weui-media-time">{{item.createdAt}}</view>
+            <view class="weui-media-box__info__meta weui-media-time">{{item.due}}</view>
             <view class="weui-media-box__info__meta weui-media-box__info__meta_extra">{{item.commentator}}</view>
           </view>
         </view>

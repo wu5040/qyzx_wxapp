@@ -7,21 +7,39 @@ var app = getApp();
 Page({
   data: {
     rows: {},
+    rows_due:'',
     zans: 0,
     PlId: '',
-    objectId: '',
+    textId: '',
     textList: [],
     pinglun: '',
     hiddenmodalput: true,
+    commentList:{},
+    comment_due:''
   },
 
   //点击按钮指定的hiddenmodalput弹出框  
   modalinput: function() {
+    if (app.globalData.userInfo==null){
+      wx.showModal({
+        title: '提示',
+        content: '请先登录',
+        success: function (res) {
+          if (res.confirm) {
+            wx.navigateTo({
+              url: '/pages/home/login/login',
+            })
+          } else if (res.cancel) { }
+        }
+      })
+      return;
+    }
     this.setData({
       hiddenmodalput: !this.data.hiddenmodalput
     })
   },
-  //取消按钮  
+
+  //评论完成后点击取消按钮
   cancel: function() {
     this.setData({
       hiddenmodalput: true
@@ -30,60 +48,71 @@ Page({
       pinglun: "",
     });
   },
-  //确认  
+
+  //评论完成后点击确认按钮  
   confirm: function() {
     this.setData({
       hiddenmodalput: true
     })
 
     console.log("评论：" + this.data.pinglun);
-    const query = Bmob.Query('comment');
-    query.set("textID", this.data.objectId)
-    console.log("this.data.objectId" + this.data.objectId)
-    query.set("comment", this.data.pinglun)
-    query.set("commentator", app.globalData.userInfo.username)
-    query.save().then(res => {
-      console.log(res)
-      wx.showModal({
-        title: '提示',
-        content: '提交成功，请下拉刷新。',
-        success: function(res) {
-          if (res.confirm) {
-            console.log('用户点击确定')
-          } else if (res.cancel) {
-            console.log('用户点击取消')
+
+    //插入一条评论数据
+    const comments_collection = app.globalData.db.collection('qyzx_comments');
+    comments_collection.add({
+      // data 字段表示需新增的 JSON 数据
+      data: {
+        due: new Date(),
+        content: new String(this.data.pinglun),
+        commentator: new String(app.globalData.userInfo._id),
+        textID: new String(this.data.textId)
+      },
+      success: function(res) {
+        console.log(res)
+        wx.showModal({
+          title: '提示',
+          content: '友善发言的人运气不会太差。',
+          success: function(res) {
+            if (res.confirm) {
+              console.log('用户点击确定')
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
           }
-        }
-      })
-      
-    }).catch(err => {
-      console.log(err)
-      wx.showModal({
-        title: '提示',
-        content: '提交失败,请检查网络',
-        success: function(res) {
-          if (res.confirm) {
-            console.log('用户点击确定')
-          } else if (res.cancel) {
-            console.log('用户点击取消')
+        })
+      },
+      fail: function(err) {
+        console.log(err)
+        wx.showModal({
+          title: '提示',
+          content: '提交失败,请检查网络',
+          success: function(res) {
+            if (res.confirm) {
+              console.log('用户点击确定')
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
           }
-        }
-      })
+        })
+      }
     })
+
     this.setData({
       pinglun: "",
     });
-     const query2 = Bmob.Query("comment");
-    query2.order("-createdAt");
-    query2.equalTo("textID", "==", this.data.objectId);
-    query2.find().then(res => {
-      console.log(res)
-      this.setData({
-        'commentList': res
-      })
-      console.log('commentList:', this.data.commentList)
-    });
-    
+
+    const comments_collection2 = app.globalData.db.collection('qyzx_comments');
+    comments_collection2.where({
+        textID: this.data.textId
+      }).orderBy('due', 'desc')
+      .get().then(res => {
+        console.log('按时间排序后：', res.data)
+        this.setData({
+          'commentList': res.data
+        })
+        console.log('commentList:', this.data.commentList)
+      });
+
   },
 
   sugInput: function(e) {
@@ -93,11 +122,61 @@ Page({
   },
 
   zan: function(e) {
-    const qu1 = Bmob.Query("ding");
-    qu1.equalTo("textID", "==", this.data.objectId);
-    qu1.equalTo("userID", "==", app.globalData.userInfo.objectId);
-    qu1.find().then(res => {
-      if (res.length != 0) {
+    if (app.globalData.userInfo == null) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录',
+        success: function(res) {
+          if (res.confirm) {
+            wx.navigateTo({
+              url: '/pages/home/login/login',
+            })
+          } else if (res.cancel) {}
+        }
+      })
+      return;
+    }
+    const praise_collection = app.globalData.db.collection('qyzx_praise');
+
+    praise_collection.where({
+      'textID': this.data.textId,
+      'userID': app.globalData.userInfo._id
+    }).get().then(res => {
+      console.log("赞记录", res)
+      if (res.data.length == 0) {
+        //用户未赞过该帖子
+        praise_collection.add({
+          data: {
+            due: new Date(),
+            textID: new String(this.data.textId),
+            userID: new String(app.globalData.userInfo._id)
+          },
+          success: function(res) {
+            // res 是一个对象，其中有 _id 字段标记刚创建的记录的 id
+            console.log('add zan ', res)
+          }
+        })
+        const _ = app.globalData.db.command;
+        var text_doc = app.globalData.db.collection('qyzx_texts').doc(this.data.textId)
+        text_doc.update({
+          data: {
+            // 将赞自增 1
+            ding: _.inc(1)
+          },
+          success: function(res) {
+            console.log(res)
+          }
+        })
+
+        text_doc.get().then(res => {
+          console.log('刷新:', res.data)
+          this.setData({
+            zans: res.data.ding
+          })
+        })
+
+      } else {
+        //用户已经赞过该帖子
         wx.showModal({
           title: '提示',
           content: '每个人只能赞一次哦',
@@ -109,85 +188,115 @@ Page({
             }
           }
         })
-      } else {
-        var zant = this.data.zans + 1;
-        this.setData({
-          zans: zant
-        })
-        var query = Bmob.Query('ding');
-        query.set("textID", this.data.objectId)
-        query.set("userID", app.globalData.userInfo.objectId)
-        query.save().then(res => {
-          console.log(res)
-        }).catch(err => {
-          console.log(err)
-        })
-        var qu = Bmob.Query('text');
-        qu.get(this.data.objectId).then(res => {
-
-          console.log('resviews__', res.viewed)
-          res.set('ding', res.ding + 1)
-          this.data.rows.ding = res.ding + 1
-          res.save()
-        }).catch(err => {
-          console.log(err)
-        })
       }
-    });
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // const qu1 = Bmob.Query("ding");
+    // qu1.equalTo("textID", "==", this.data.objectId);
+    // qu1.equalTo("userID", "==", app.globalData.userInfo.objectId);
+    // qu1.find().then(res => {
+    //   if (res.length != 0) {
+    //     wx.showModal({
+    //       title: '提示',
+    //       content: '每个人只能赞一次哦',
+    //       success: function(res) {
+    //         if (res.confirm) {
+    //           console.log('用户点击确定')
+    //         } else if (res.cancel) {
+    //           console.log('用户点击取消')
+    //         }
+    //       }
+    //     })
+    //   } else {
+    //     var zant = this.data.zans + 1;
+    //     this.setData({
+    //       zans: zant
+    //     })
+
+    //     var query = Bmob.Query('ding');
+    //     query.set("textID", this.data.objectId)
+    //     query.set("userID", app.globalData.userInfo.objectId)
+    //     query.save().then(res => {
+    //       console.log(res)
+    //     }).catch(err => {
+    //       console.log(err)
+    //     })
+    //     var qu = Bmob.Query('text');
+    //     qu.get(this.data.objectId).then(res => {
+
+    //       console.log('resviews__', res.viewed)
+    //       res.set('ding', res.ding + 1)
+    //       this.data.rows.ding = res.ding + 1
+    //       res.save()
+    //     }).catch(err => {
+    //       console.log(err)
+    //     })
+    //   }
+    // });
   },
 
   onLoad: function(e) {
     // 页面初始化 objectId为页面跳转所带来的参数
-    console.log(e.objectId)
-    var objectId = e.objectId;
+    var textId = e.objectId;
     var that = this;
     console.log('onload执行')
+    const _ = app.globalData.db.command
 
-    const qu = Bmob.Query('text');
-    qu.order("-createdAt");
-    qu.get(objectId).then(res => {
-      console.log('res', res)
-      res.set('viewed', res.viewed + 1)
+    app.globalData.db.collection('qyzx_texts').doc(textId).get().then(res=> {
+      var duestr=String(res.data.due).split(" ").slice(1,5).join(" ")
 
-      res.save()
-      console.log('resviews', res.viewed)
-
+      
       that.setData({
-        rows: res,
-        objectId: objectId,
-        zans: res.ding
-      });
-      console.log('rows', that.data.rows);
-    }).catch(err => {
-      console.log(err)
+        rows: res.data,
+        rows_due:duestr,
+        textId: textId,
+        zans: res.data.ding
+      })
+      console.log('rows', that.data.rows)
     })
 
-    const query = Bmob.Query("comment");
-    query.equalTo("textID", "==", objectId);
-    query.find().then(res => {
-      console.log(res)
+    app.globalData.db.collection('qyzx_texts').doc(textId).update({
+      data: {
+        // 将浏览量自增 1
+        viewed: _.inc(1)
+      },
+      success: function(res) {
+        console.log(res)
+      }
+    })
+
+
+    app.globalData.db.collection('qyzx_comments').where({
+      textID: textId
+    }).get().then( res => {
+      console.log(res.data)
       this.setData({
-        'commentList': res
+        'commentList': res.data
       })
       console.log('commentList:', this.data.commentList)
-      console.log("objectID", this.data.objectId)
-    });
+    })
 
   },
 
-  onReady: function() {
-    // 页面渲染完成
-    // const query = Bmob.Query("comment");
-    // query.order("-createdAt");
-    // query.equalTo("textID", "==", this.data.objectId);
-    // query.find().then(res => {
-    //   console.log(res)
-    //   this.setData({
-    //     'commentList': res
-    //   })
-    //   console.log('commentList:', this.data.commentList)
-    // });
-  },
+  onReady: function() {},
 
   onShow: function() {
 
@@ -199,21 +308,23 @@ Page({
     // 页面关闭
   },
   //下拉刷新
-  onPullDownRefresh: function () {
+  onPullDownRefresh: function() {
     wx.showNavigationBarLoading() //在标题栏中显示加载
 
-    const query = Bmob.Query("comment");
-    query.equalTo("textID", "==", this.data.objectId);
-    query.find().then(res => {
-      console.log(res)
-      this.setData({
-        'commentList': res
-      })
-      console.log('commentList:', this.data.commentList)
+    app.globalData.db.collection('qyzx_comments').where({
+      textID: this.data.textId
+    }).get({
+      success: function(res) {
+        console.log(res.data)
+        this.setData({
+          'commentList': res.data
+        })
+        console.log('commentList:', this.data.commentList)
+      }
     });
 
     //模拟加载
-    setTimeout(function () {
+    setTimeout(function() {
       // complete
       wx.hideNavigationBarLoading() //完成停止加载
       wx.stopPullDownRefresh() //停止下拉刷新
@@ -221,105 +332,3 @@ Page({
   },
 
 })
-
-
-
-
-
-
-
-
-// var Bmob = require('../../../dist/Bmob-1.6.0.min.js');
-// var app = getApp();
-// Page({
-//   data: {
-//     rows: {},
-//     zans: 0,
-//     PlId: '',
-//     objectId: ''
-//   },
-//   zan: function(e) {
-//     const qu1 = Bmob.Query("ding");
-//     qu1.equalTo("textID", "==", this.data.objectId);
-//     qu1.equalTo("userID", "==", app.globalData.userInfo.objectId);
-//     qu1.find().then(res => {
-//       if (res.length != 0) {
-//         wx.showModal({
-//           title: '提示',
-//           content: '每个人只能赞一次哦',
-//           success: function(res) {
-//             if (res.confirm) {
-//               console.log('用户点击确定')
-//             } else if (res.cancel) {
-//               console.log('用户点击取消')
-//             }
-//           }
-//         })
-//       } else {
-//         var zant = this.data.zans + 1;
-//         this.setData({
-//           zans: zant
-//         })
-//         var query = Bmob.Query('ding');
-//         query.set("textID", this.data.objectId)
-//         query.set("userID", app.globalData.userInfo.objectId)
-//         query.save().then(res => {
-//           console.log(res)
-//         }).catch(err => {
-//           console.log(err)
-//         })
-//         var qu = Bmob.Query('text');
-//         qu.get(this.data.objectId).then(res => {
-
-//           console.log('resviews__', res.viewed)
-//           res.set('ding', res.ding + 1)
-//           this.data.rows.ding = res.ding + 1
-//           res.save()
-//         }).catch(err => {
-//           console.log(err)
-//         })
-//       }
-
-//     });
-//   },
-
-//   onLoad: function(e) {
-//     // 页面初始化 options为页面跳转所带来的参数
-
-//     console.log(e.objectId)
-//     var objectId = e.objectId;
-//     var that = this;
-//     console.log('onload执行')
-
-//     const qu = Bmob.Query('text');
-//     qu.get(objectId).then(res => {
-//       console.log('res', res)
-//       res.set('viewed', res.viewed + 1)
-
-//       res.save()
-//       console.log('resviews', res.viewed)
-
-//       that.setData({
-//         rows: res,
-//         objectId: objectId,
-//         zans: res.ding
-//       });
-//       console.log('rows', that.data.rows);
-//     }).catch(err => {
-//       console.log(err)
-//     })
-//   },
-//   onReady: function(e) {
-//     // 页面渲染完成
-//   },
-//   onShow: function() {
-
-//     // 页面显示
-//   },
-//   onHide: function() {
-//     // 页面隐藏
-//   },
-//   onUnload: function() {
-//     // 页面关闭
-//   }
-// })
