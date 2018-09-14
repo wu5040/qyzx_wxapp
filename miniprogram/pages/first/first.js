@@ -30,27 +30,87 @@ Page({
     listNum: 0,
     showLeft1: false,
     username: '',
-    x:app.globalData.windowWidth*0.8*0.3,
-    y:30,
+    x: app.globalData.windowWidth * 0.8 * 0.3,
+    y: 30,
+    defaultSize: 'default',
+    primarySize: 'default',
+    warnSize: 'default',
+    disabled: false,
+    plain: false,
+    loading: false,
+    avatarUrl:'',
   },
 
-  pl:function(){
+  fankui:function(){
+    console.log('appglobaldata: ',app.globalData.nickName, this.data.username)
+    if (app.globalData.nickName == ''){
+      wx.showModal({
+        title: '提示',
+        content: '请点击右下方按钮登录',
+        success: function (res) {
+          if (res.confirm) {
+            console.log('用户点击确定')
+          } else if (res.cancel) {
+            console.log('用户点击取消')
+          }
+        }
+      })
+    }else{
+      wx.navigateTo({
+        url: '/pages/index/index',
+      })
+    }
+  },
+
+  setDisabled: function(e) {
+    this.setData({
+      disabled: !this.data.disabled
+    })
+  },
+  setPlain: function(e) {
+    this.setData({
+      plain: !this.data.plain
+    })
+  },
+  setLoading: function(e) {
+    this.setData({
+      loading: !this.data.loading
+    })
+  },
+  onGotUserInfo: function(e) {
+    console.log(e.detail.errMsg)
+    console.log(e.detail.userInfo)
+    console.log(e.detail.rawData)
+    if(app.globalData.province == ''){
+      console.log('存储全局变量中')
+      app.globalData.province = e.detail.userInfo.province
+      app.globalData.nickName = e.detail.userInfo.nickName
+      app.globalData.avatarUrl = e.detail.userInfo.avatarUrl
+    }
+    this.setData({
+      showLeft1: !this.data.showLeft1,
+      username: app.globalData.nickName,
+      avatarUrl: app.globalData.avatarUrl
+    });
+  },
+
+  pl: function() {
     wx.navigateTo({
       url: '/pages/home/mycomment/mycomment',
     })
   },
 
-  fabu: function () {
+  fabu: function() {
     wx.navigateTo({
       url: '/pages/home/mysug/mysug',
     })
   },
-  
-  onChange: function (e) {
+
+  onChange: function(e) {
     console.log(e.detail)
     this.setData({
-      x: app.globalData.windowWidth * 0.8* 0.3,
-      y:30
+      x: app.globalData.windowWidth * 0.8 * 0.3,
+      y: 30
     })
   },
 
@@ -58,29 +118,6 @@ Page({
     wx.navigateTo({
       url: '/pages/aboutus/aboutus',
     })
-  },
-
-  toggleLeft1: function() {
-    if (app.globalData.userInfo == null) {
-      wx.showModal({
-        title: '提示',
-        content: '请先登录',
-        success: function(res) {
-          if (res.confirm) {
-            console.log('用户点击确定')
-            wx.navigateTo({
-              url: '/pages/home/login/login',
-            })
-          } else if (res.cancel) {
-            console.log('用户点击取消')
-          }
-        }
-      })
-    } else {
-      this.setData({
-        showLeft1: !this.data.showLeft1
-      });
-    }
   },
 
   change: function() {
@@ -94,16 +131,15 @@ Page({
    */
   onLoad: function(options) {
 
-
-
-
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function() {
+    
     if (app.globalData.userInfo) {
+
       this.setData({
         username: app.globalData.userInfo._id
       })
@@ -150,5 +186,5 @@ Page({
    */
   onShareAppMessage: function() {
 
-  }
+  },
 })
