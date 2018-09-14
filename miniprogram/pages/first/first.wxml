@@ -82,7 +82,7 @@
   </view>
 
 
-  <view class="grid_main">
+  <!-- <view class="grid_main">
     <view class="grid_item item3">
       <image src="http://bmob-cdn-20067.b0.upaiyun.com/2018/06/30/f645525940773a028075686dc3a6c95c.png"></image>
       <text>敬请期待</text>
@@ -97,7 +97,7 @@
       <image src="http://bmob-cdn-20067.b0.upaiyun.com/2018/06/30/f645525940773a028075686dc3a6c95c.png"></image>
       <text>敬请期待</text>
     </view>
-  </view>
+  </view> -->
 
   <text class="weui-footer__text">Copyright © 2018 权益中心</text>
 
