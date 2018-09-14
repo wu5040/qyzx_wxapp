@@ -25,6 +25,8 @@ movable-area {
   width: 180rpx;
   height: 180rpx;
   border: 8rpx solid white;
+  background-size: 100%;
+  background-repeat: no-repeat
 }
 
 .username{

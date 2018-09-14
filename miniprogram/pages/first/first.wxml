@@ -1,8 +1,8 @@
 <!--pages/first/first.wxml-->
-<view class="round-click1" bindtap="toggleLeft1">
+<!-- <view class="round-click1" bindtap="toggleLeft1" hidden='true'>
   ≡
-</view>
-
+</view> -->
+<button class="round-click1" open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">≡</button>
 
 
 <i-drawer mode="left" visible="{{showLeft1}}" bind:close="toggleLeft1">
@@ -14,7 +14,7 @@
       <movable-area style="height: 45vh; width: 100vw;">
 
         <movable-view class="movable_view" x="{{x}}" y="{{y}}" direction="all" bindchange="onChange" damping="50">
-           <image class="touxiang" src='http://bmob-cdn-20067.b0.upaiyun.com/2018/07/05/b22d90db40e019ae80311275b3c1db7e.jpg'></image>  
+           <view class="touxiang" style="background-image: url({{avatarUrl}})"></view>  
             <text class="username">{{username}}</text>
         </movable-view>
 
@@ -59,15 +59,10 @@
 
   <view class="grid_main">
 
-    <navigator class="grid_item item1" url='/pages/index/index'>
+    <view class="grid_item item1" bindtap='fankui'>
       <image src="http://bmob-cdn-20067.b0.upaiyun.com/2018/06/30/979a56b640bcdc1d8063215613249c1f.png"></image>
       <text>反馈建议</text>
-    </navigator>
-
-    <!-- <view class="grid_item item2">
-      <image src="http://bmob-cdn-20067.b0.upaiyun.com/2018/06/30/899e6c1640dea53180eac1e7cece7bd6.png"></image>
-      <text>失物招领</text>
-    </view> -->
+    </view>
 
     <view class="grid_item item2">
       <image src="http://bmob-cdn-20067.b0.upaiyun.com/2018/06/30/f645525940773a028075686dc3a6c95c.png"></image>
@@ -80,7 +75,6 @@
     </view>
 
   </view>
-
 
   <view class="grid_main">
     <view class="grid_item item3">

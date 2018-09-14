@@ -1,7 +1,4 @@
 // pages/index/detail/index.js
-// pages/index / detail / index.js
-var Bmob = require('../../../dist/Bmob-1.6.0.min.js');
-
 var app = getApp();
 
 Page({

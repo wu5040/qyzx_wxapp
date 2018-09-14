@@ -1,5 +1,4 @@
 // pages/suggest/suggest.js
-var Bmob = require('../../dist/Bmob-1.6.0.min.js');
 
 var app = getApp();
 
@@ -31,6 +30,8 @@ Page({
       }
     ]
   },
+
+  
 
   radioChange: function(e) {
     console.log('radio发生change事件，携带value值为：', e.detail.value);

@@ -45,7 +45,7 @@ Page({
   },
 
   toggleLeft1() {
-    if (app.globalData.userInfo == null) {
+    if (app.globalData.nickName == null) {
       wx.showModal({
         title: '提示',
         content: '请先登录',
