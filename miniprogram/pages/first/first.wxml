@@ -2,7 +2,9 @@
 <!-- <view class="round-click1" bindtap="toggleLeft1" hidden='true'>
   ≡
 </view> -->
-<button class="round-click1" open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">≡</button>
+<view class="round-click1" bindtap="toggleLeft1">
+  ≡
+</view>
 
 
 <i-drawer mode="left" visible="{{showLeft1}}" bind:close="toggleLeft1">

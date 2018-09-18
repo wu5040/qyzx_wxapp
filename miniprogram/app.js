@@ -16,7 +16,6 @@ App({
     var that = this
     this.globalData.db = wx.cloud.database()
 
-
     this.globalData.db = wx.cloud.database()
 
 
@@ -39,6 +38,5 @@ App({
     province:'',
     nickName:'',
     avatarUrl:'',
-
   }
 })

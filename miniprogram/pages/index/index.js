@@ -17,7 +17,8 @@ Page({
     color: ["#72afd3, #37ecba"],
     deg: 135,
     showLeft1: false,
-    username: ''
+    username: '',
+    avatarUrl: ''
   },
 
   change: function() {
@@ -45,26 +46,13 @@ Page({
   },
 
   toggleLeft1() {
-    if (app.globalData.nickName == null) {
-      wx.showModal({
-        title: '提示',
-        content: '请先登录',
-        success: function(res) {
-          if (res.confirm) {
-            console.log('用户点击确定')
-            wx.navigateTo({
-              url: '/pages/home/login/login',
-            })
-          } else if (res.cancel) {
-            console.log('用户点击取消')
-          }
-        }
-      })
-    } else {
-      this.setData({
-        showLeft1: !this.data.showLeft1
-      });
-    }
+    this.setData({
+      username: app.globalData.nickName,
+      avatarUrl: app.globalData.avatarUrl
+    })
+    this.setData({
+      showLeft1: !this.data.showLeft1
+    });
   },
   handleChange({
     detail

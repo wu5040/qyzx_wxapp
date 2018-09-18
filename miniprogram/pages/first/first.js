@@ -77,22 +77,6 @@ Page({
       loading: !this.data.loading
     })
   },
-  onGotUserInfo: function(e) {
-    console.log(e.detail.errMsg)
-    console.log(e.detail.userInfo)
-    console.log(e.detail.rawData)
-    if(app.globalData.province == ''){
-      console.log('存储全局变量中')
-      app.globalData.province = e.detail.userInfo.province
-      app.globalData.nickName = e.detail.userInfo.nickName
-      app.globalData.avatarUrl = e.detail.userInfo.avatarUrl
-    }
-    this.setData({
-      showLeft1: !this.data.showLeft1,
-      username: app.globalData.nickName,
-      avatarUrl: app.globalData.avatarUrl
-    });
-  },
 
   pl: function() {
     wx.navigateTo({
@@ -180,7 +164,15 @@ Page({
   onReachBottom: function() {
 
   },
-
+  toggleLeft1() {
+    this.setData({
+      username: app.globalData.nickName,
+      avatarUrl: app.globalData.avatarUrl
+    })
+    this.setData({
+      showLeft1: !this.data.showLeft1
+    });
+  },
   /**
    * 用户点击右上角分享
    */

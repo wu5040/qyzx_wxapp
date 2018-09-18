@@ -47,23 +47,6 @@ Page({
   },
 
   loginBtnClick: function(e) {
-
-    if (app.globalData.userInfo == null) {
-      wx.showModal({
-        title: '提示',
-        content: '请先登录',
-        success: function(res) {
-          if (res.confirm) {
-            console.log('用户点击确定')
-            wx.navigateTo({
-              url: '/pages/home/login/login',
-            })
-          } else if (res.cancel) {
-            console.log('用户点击取消')
-          }
-        }
-      })
-    } else {
       if (this.data.suggestion == null) {
         wx.showModal({
           title: '提示',
@@ -87,9 +70,11 @@ Page({
             due: new Date(),
             content: new String(this.data.suggestion),
             writer: new String(app.globalData.userInfo._id),
+            name: new String(app.globalData.nickName),
             viewed: new Number(0),
             ding: new Number(0),
-            checked: false
+            checked: false,
+            avatarUrl: new String(app.globalData.avatarUrl)
           },
           success: function(res) {
             // 成功反馈建议
@@ -129,55 +114,9 @@ Page({
             })
           }
         })
-
-
-        // const query = Bmob.Query('text');
-        // query.set("classes", this.data.classes)
-        // query.set("content", this.data.suggestion)
-        // query.set("writer", app.globalData.userInfo.username)
-        // query.set("viewed", 0)
-        // query.set("ding", 0)
-        // query.set("checked", false)
-
-        // query.save().then(res => {
-        //   console.log(res)
-        //   wx.showModal({
-        //     title: '提示',
-        //     content: '提交成功',
-        //     success: function(res) {
-        //       if (res.confirm) {
-        //         console.log('用户点击确定')
-        //         wx.navigateTo({
-        //           url: '/pages/index/index',
-        //         })
-        //       } else if (res.cancel) {
-        //         console.log('用户点击取消')
-        //       }
-        //     }
-        //   })
-        //   this.setData({
-        //     suggestion: "",
-        //     userName: ""
-        //   });
-        //   console.log("跳转界面")
-        // }).catch(err => {
-        //   console.log(err)
-        //   wx.showModal({
-        //     title: '提示',
-        //     content: '提交失败,请检查网络',
-        //     success: function(res) {
-        //       if (res.confirm) {
-        //         console.log('用户点击确定')
-        //       } else if (res.cancel) {
-        //         console.log('用户点击取消')
-        //       }
-        //     }
-        //   })
-        // })
       }
 
-    }
-  },
+    },
 
   /**
    * 生命周期函数--监听页面加载
@@ -190,6 +129,9 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function() {
+    this.setData({
+      username: app.globalData.nickName
+    })
 
   },
 
