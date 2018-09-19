@@ -27,10 +27,14 @@
 <i-drawer mode="left" visible="{{showLeft1}}" bind:close="toggleLeft1">
   <view class='chouti'>
     <view class='bkct'>
-      <image class='touxiang' src='http://bmob-cdn-20067.b0.upaiyun.com/2018/07/05/b22d90db40e019ae80311275b3c1db7e.jpg'></image>
+      <image class='touxiang' src="{{ avatarUrl }}"></image>
       <text>\n</text>
       <view class='user'>
         <text>{{username}}</text>
+
+        <!-- <view class="touxiang" style="background-image: url({{ avatarUrl}})"></view>
+      <text class="username">{{username}}</text> -->
+
       </view>
     </view>
     <view class='zhengwen'>
@@ -68,7 +72,7 @@
         <view class="weui-panel__bd">
           <block wx:if="{{textList.length>0}}">
             <navigator class='i-card' wx:for="{{textList}}" wx:key="textItem" url="/pages/index/detail/index?objectId={{item._id}}">
-              <i-card title="{{item.writer}}" extra="{{item.ding}}人赞过 · {{item.classes}}" thumb="http://bmob-cdn-20067.b0.upaiyun.com/2018/07/05/b22d90db40e019ae80311275b3c1db7e.jpg">
+              <i-card title="{{item.writer}}" extra="{{item.ding}}人赞过 · {{item.classes}}" thumb="{{ }}">
                 <view class="zw" slot="content">{{ item.content }}</view>
               </i-card>
             </navigator>

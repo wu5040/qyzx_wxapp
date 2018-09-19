@@ -77,6 +77,7 @@ Page({
       loading: !this.data.loading
     })
   },
+
   onGotUserInfo: function(e) {
     console.log(e.detail.errMsg)
     console.log(e.detail.userInfo)
@@ -92,6 +93,34 @@ Page({
       username: app.globalData.nickName,
       avatarUrl: app.globalData.avatarUrl
     });
+
+    wx.cloud.callFunction({
+      name: 'login',
+      data: {},
+      success: res => {
+        console.log('[云函数] [login] user openid: ', res.result.openid)
+        app.globalData.openid = res.result.openid
+
+        app.globalData.db.collection('qyzx_users').add({
+          // data 字段表示需新增的 JSON 数据
+          data: {
+            _id: new String(app.globalData.openid),
+            due: new Date(),
+            province: new String(app.globalData.province),
+            nickName: new String(app.globalData.nickName),
+            avatarUrl: new String(app.globalData.avatarUrl)
+          },
+          success: function (res) {
+            // res 是一个对象，其中有 _id 字段标记刚创建的记录的 id
+            console.log(res)
+          }
+        })
+
+      },
+      fail: err => {
+        console.error('[云函数] [login] 调用失败', err)
+      }
+    })
   },
 
   pl: function() {

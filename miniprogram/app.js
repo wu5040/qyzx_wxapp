@@ -16,10 +16,6 @@ App({
     var that = this
     this.globalData.db = wx.cloud.database()
 
-
-    this.globalData.db = wx.cloud.database()
-
-
     wx.getSystemInfo({
       success: function (res) {
         console.log(res.windowWidth)
@@ -33,6 +29,7 @@ App({
 
   globalData: {
     userInfo: null,
+    openid: null,
     windowWidth: 200,
     windowHeight: 300,
     db: null,

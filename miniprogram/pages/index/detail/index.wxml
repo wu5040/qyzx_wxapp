@@ -4,7 +4,7 @@
   <view class='titleImage'></view>
   <scroll-view class="node_wrap">
     <view class='titles'>
-      <image src="http://bmob-cdn-20067.b0.upaiyun.com/2018/07/05/b22d90db40e019ae80311275b3c1db7e.jpg"></image>
+      <image src="{{ avatarUrl }}"></image>
       <view>
         <text class='author'>
         {{ rows.writer }} 

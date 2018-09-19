@@ -17,7 +17,8 @@ Page({
     color: ["#72afd3, #37ecba"],
     deg: 135,
     showLeft1: false,
-    username: ''
+    username: '',
+    avatarUrl: '',
   },
 
   change: function() {
@@ -123,11 +124,11 @@ Page({
         console.log('textList:', this.data.textList)
       })
 
-    if (app.globalData.userInfo != null) {
       this.setData({
-        username: app.globalData.userInfo._id
+        username: app.globalData.nickName,
+        avatarUrl: app.globalData.avatarUrl
       })
-    }
+
 
   },
 

@@ -46,9 +46,9 @@ Page({
     })
   },
 
-  loginBtnClick: function(e) {
+  publish: function(e) {
 
-    if (app.globalData.userInfo == null) {
+    if (app.globalData.openid == null) {
       wx.showModal({
         title: '提示',
         content: '请先登录',
@@ -86,7 +86,7 @@ Page({
             classes: new String(this.data.classes),
             due: new Date(),
             content: new String(this.data.suggestion),
-            writer: new String(app.globalData.userInfo._id),
+            writer: new String(app.globalData.nickName),
             viewed: new Number(0),
             ding: new Number(0),
             checked: false
