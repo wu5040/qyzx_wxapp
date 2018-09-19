@@ -77,6 +77,7 @@ Page({
       loading: !this.data.loading
     })
   },
+<<<<<<< HEAD
 
   onGotUserInfo: function(e) {
     console.log(e.detail.errMsg)
@@ -122,6 +123,8 @@ Page({
       }
     })
   },
+=======
+>>>>>>> bdacacc22625c62f0b210e6a7b921b0f7935f876
 
   pl: function() {
     wx.navigateTo({
@@ -209,7 +212,15 @@ Page({
   onReachBottom: function() {
 
   },
-
+  toggleLeft1() {
+    this.setData({
+      username: app.globalData.nickName,
+      avatarUrl: app.globalData.avatarUrl
+    })
+    this.setData({
+      showLeft1: !this.data.showLeft1
+    });
+  },
   /**
    * 用户点击右上角分享
    */

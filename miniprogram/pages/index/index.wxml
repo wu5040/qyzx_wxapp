@@ -27,7 +27,11 @@
 <i-drawer mode="left" visible="{{showLeft1}}" bind:close="toggleLeft1">
   <view class='chouti'>
     <view class='bkct'>
+<<<<<<< HEAD
       <image class='touxiang' src="{{ avatarUrl }}"></image>
+=======
+      <image class='touxiang' style="background-image: url({{avatarUrl}})"></image>
+>>>>>>> bdacacc22625c62f0b210e6a7b921b0f7935f876
       <text>\n</text>
       <view class='user'>
         <text>{{username}}</text>
@@ -72,7 +76,11 @@
         <view class="weui-panel__bd">
           <block wx:if="{{textList.length>0}}">
             <navigator class='i-card' wx:for="{{textList}}" wx:key="textItem" url="/pages/index/detail/index?objectId={{item._id}}">
+<<<<<<< HEAD
               <i-card title="{{item.writer}}" extra="{{item.ding}}人赞过 · {{item.classes}}" thumb="{{ }}">
+=======
+              <i-card title="{{item.name}}" extra="{{item.ding}}人赞过 · {{item.classes}}" thumb = "{{item.avatarUrl}}">
+>>>>>>> bdacacc22625c62f0b210e6a7b921b0f7935f876
                 <view class="zw" slot="content">{{ item.content }}</view>
               </i-card>
             </navigator>

@@ -16,6 +16,12 @@ App({
     var that = this
     this.globalData.db = wx.cloud.database()
 
+<<<<<<< HEAD
+=======
+    this.globalData.db = wx.cloud.database()
+
+
+>>>>>>> bdacacc22625c62f0b210e6a7b921b0f7935f876
     wx.getSystemInfo({
       success: function (res) {
         console.log(res.windowWidth)
@@ -36,6 +42,5 @@ App({
     province:'',
     nickName:'',
     avatarUrl:'',
-
   }
 })

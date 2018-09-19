@@ -1,6 +1,7 @@
 {
   "cloud": true,
   "pages": [
+    "pages/begin/begin",
     "pages/first/first",
     "pages/index/index",
     "pages/index/detail/index",
@@ -8,6 +9,7 @@
     "pages/home/mysug/mysug",
     "pages/aboutus/aboutus",
     "pages/home/mycomment/mycomment"
+    
   ],
   "data": {
     "username": "",

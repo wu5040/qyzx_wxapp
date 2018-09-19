@@ -4,10 +4,14 @@
   <view class='titleImage'></view>
   <scroll-view class="node_wrap">
     <view class='titles'>
+<<<<<<< HEAD
       <image src="{{ avatarUrl }}"></image>
+=======
+      <image src = "{{rows.avatarUrl}}"></image>
+>>>>>>> bdacacc22625c62f0b210e6a7b921b0f7935f876
       <view>
         <text class='author'>
-        {{ rows.writer }} 
+        {{ rows.name }} 
       </text>
       </view>
     </view>
